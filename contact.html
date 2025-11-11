@@ -211,6 +211,48 @@
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
+<!-- payload fix -->
+  <script>
+  (function () {
+    if (window.__siteFixApplied) return; 
+    window.__siteFixApplied = true;
+
+    function initAOS() {
+      if (!window.AOS) return;
+      if (!document.documentElement.classList.contains('aos-initialized')) {
+        AOS.init({ once: true, duration: 600, easing: 'ease-out-quad' });
+        document.documentElement.classList.add('aos-initialized');
+      }
+      if (AOS.refreshHard) AOS.refreshHard();
+    }
+
+    function removePreloader() {
+      var p = document.getElementById('preloader');
+      if (p && p.parentNode) p.parentNode.removeChild(p);
+      document.documentElement.classList.add('loaded'); // optional CSS hook
+      initAOS();
+      // Nudge libs that wait for first scroll/resize to reveal elements
+      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event('scroll'));
+    }
+
+    // Remove ASAP; don't block on slow fonts/images
+    document.addEventListener('DOMContentLoaded', removePreloader, { once: true });
+    // Also on full load (harmless if already removed)
+    window.addEventListener('load', removePreloader);
+    // Hard fallback in case of 3rd-party stalls
+    setTimeout(removePreloader, 3000);
+
+    // If the page happens to have an Isotope grid, make sure it lays out after images
+    window.addEventListener('load', function () {
+      var container = document.querySelector('.isotope-container');
+      if (!container || !window.Isotope) return;
+      var iso = new Isotope(container, { itemSelector: '.isotope-item', layoutMode: 'masonry' });
+      if (window.imagesLoaded) imagesLoaded(container, function () { iso.layout(); });
+    });
+  })();
+  </script>
+
 </body>
 
 </html>

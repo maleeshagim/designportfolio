@@ -2853,3 +2853,6 @@ section,
 .starter-section {
   /* Add your styles here */
 }
+
+/* payload fix: ensure visibility if JS/AOS is delayed */
+html.loaded [data-aos] { opacity: 1 !important; transform: none !important; }
